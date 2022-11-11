@@ -1,6 +1,7 @@
 package testscripts;
 
 import org.testng.Assert;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import base.PredefinedActions;
@@ -8,21 +9,50 @@ import pages.LoginPage;
 
 public class LoginTest {
 
-	@Test
-	public void tc1() {
+	@Test(dataProvider = "LoginDataProvider")
+	public void tc1(String url, String username, String password, boolean isLoginSuccessful) {
 		System.out.println("STEP - Launch Chrome Browser & Hit url");
-		PredefinedActions.start("https://ababel-trials77.orangehrmlive.com");
-		
+		PredefinedActions.start(url);
+
 		System.out.println("STEP - Enter valid login credentials");
 		LoginPage loginPage = new LoginPage();
-		loginPage.login("Admin", "jhLqPX@S07");
-		
-		System.out.println("VERIFY - Login successfully");
-		String expetedTitle = "Employee Management";
-		String actualTitle = loginPage.getPageTitle();
-		
-		Assert.assertEquals(actualTitle, expetedTitle, "Expected title was " + expetedTitle + " but actual title is " + actualTitle);
-		
+		loginPage.login(username, password);
+
+		if (isLoginSuccessful) {
+			System.out.println("VERIFY - Login successfully");
+			String expetedTitle = "Employee Management";
+			String actualTitle = loginPage.getPageTitle();
+			Assert.assertEquals(actualTitle, expetedTitle,
+					"Expected title was " + expetedTitle + " but actual title is " + actualTitle);
+		} else {
+			System.out.println("VERIFY - Invalid credentials ,Retry Login page is loaded");
+			String expetedTitle = "OrangeHRM";
+			String actualTitle = loginPage.getPageTitle();
+			Assert.assertEquals(actualTitle, expetedTitle,
+					"Expected title was " + expetedTitle + " but actual title was " + actualTitle);
+
+			String expectedUrlContent = "retryLogin";
+			String actualCurrentURL = loginPage.getPageURL();
+			Assert.assertTrue(actualCurrentURL.endsWith(expectedUrlContent));
+		}
+
 		PredefinedActions.closeBrowser();
+	}
+
+	@DataProvider(name = "LoginDataProvider")
+	public Object[][] getLoginData() {
+
+		Object[][] data = new Object[2][4];
+		data[0][0] = "https://ababel-trials77.orangehrmlive.com";
+		data[0][1] = "Admin";
+		data[0][2] = "jhLqPX@S07";
+		data[0][3] = true;
+
+		data[1][0] = "https://ababel-trials77.orangehrmlive.com";
+		data[1][1] = "Admin";
+		data[1][2] = "jhLqPX@S0789";
+		data[1][3] = false;
+
+		return data;
 	}
 }
