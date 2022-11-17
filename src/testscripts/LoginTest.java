@@ -1,11 +1,14 @@
 package testscripts;
 
+import java.io.IOException;
+
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import base.PredefinedActions;
 import pages.LoginPage;
+import utility.ExcelOperations;
 
 public class LoginTest {
 
@@ -40,7 +43,20 @@ public class LoginTest {
 	}
 
 	@DataProvider(name = "LoginDataProvider")
-	public Object[][] getLoginData() {
+	public Object[][] getLoginData() throws IOException {
+		Object[][] data;
+		// String fileName = ".//testdata/Logindata.xlsx";
+		try {
+			data = ExcelOperations.readExcelData(".//testdata/Logindata.xlsx", "Data");
+		} catch (IOException e) {
+			data = ExcelOperations.readExcelData(".//testdata1/Logindata.xlsx", "Data");
+		}
+
+		return data;
+	}
+
+	@DataProvider(name = "LoginDataProvider1")
+	public Object[][] getLoginData1() {
 
 		Object[][] data = new Object[2][4];
 		data[0][0] = "https://ababel-trials77.orangehrmlive.com";
