@@ -1,11 +1,16 @@
 package base;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -106,6 +111,15 @@ public class PredefinedActions {
 		return element;
 	}
 
+	protected boolean waitForVisibilityOfElement(WebElement element) {
+		try {
+			wait.until(ExpectedConditions.visibilityOf(element));
+		} catch (Exception exception) {
+			return false;
+		}
+		return true;
+	}
+
 	protected void scrollToElement(WebElement element) {
 		if (!element.isDisplayed()) {
 			JavascriptExecutor je = (JavascriptExecutor) driver;
@@ -155,12 +169,47 @@ public class PredefinedActions {
 		return listOfElementText;
 	}
 
+	protected String getElementText(WebElement element, boolean isWaitRequired) {
+		if (isWaitRequired)
+			waitForVisibilityOfElement(element);
+		String value = element.getText();
+		if (value.equals("")) {
+			value = element.getAttribute("value");
+		}
+		return value;
+	}
+
 	public String getPageTitle() {
 		return driver.getTitle();
 	}
 
 	public String getPageURL() {
 		return driver.getCurrentUrl();
+	}
+
+	public static void takeScreenshot(String testCaseName) {
+		TakesScreenshot ts = (TakesScreenshot) driver;
+		File srcFile = ts.getScreenshotAs(OutputType.FILE);
+		try {
+			FileUtils.copyFile(srcFile, new File("./failedTestCases/" + testCaseName + ".jpg"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	protected void clickUsingJS(WebElement element) {
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("arguments[0].click()", element);
+	}
+
+	protected void sendKeyUsingJS(WebElement element, String text) {
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("arguments[0].value='" + text + "'", element);
+	}
+
+	protected void markCheckboxUsingJS(WebElement element, boolean checkedOrUnchecked) {
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("arguments[0].checked=" + checkedOrUnchecked + "", element);
 	}
 
 	public static void closeBrowser() {
