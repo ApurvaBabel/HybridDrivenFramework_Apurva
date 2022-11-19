@@ -44,14 +44,7 @@ public class LoginTest {
 
 	@DataProvider(name = "LoginDataProvider")
 	public Object[][] getLoginData() throws IOException {
-		Object[][] data;
-		// String fileName = ".//testdata/Logindata.xlsx";
-		try {
-			data = ExcelOperations.readExcelData(".//testdata/Logindata.xlsx", "Data");
-		} catch (IOException e) {
-			data = ExcelOperations.readExcelData(".//testdata1/Logindata.xlsx", "Data");
-		}
-
+		Object[][] data = ExcelOperations.readExcelData(".//testdata/Logindata.xlsx", "Data");
 		return data;
 	}
 

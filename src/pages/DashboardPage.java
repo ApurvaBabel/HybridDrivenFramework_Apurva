@@ -3,6 +3,7 @@ package pages;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -30,7 +31,11 @@ public class DashboardPage extends PredefinedActions {
 	@FindBy(css = "div#companyInfo p")
 	private List<WebElement> profileAboutDetails;
 
+	@FindBy(css = "div#companyInfo>div>div:nth-child(1)>p")
+	private WebElement aboutContentFirstP;
+
 	private String aboutBtnLocator = "//a[text()='%s']";
+	private String menuLocator = "//a[contains(text(),'%s')]";
 
 	public DashboardPage() {
 		PageFactory.initElements(driver, this);
@@ -66,6 +71,10 @@ public class DashboardPage extends PredefinedActions {
 	}
 
 	public Map<String, String> getAboutText() {
+		boolean flag = waitForVisibilityOfElement(aboutContentFirstP);
+		if (!flag)
+			throw new NoSuchElementException("About content not being loaded in given time out");
+
 		List<String> aboutDetailsList = getListOfWebElementText(profileAboutDetails);
 		Map<String, String> aboutDetailsMap = new LinkedHashMap<>();
 
@@ -76,9 +85,45 @@ public class DashboardPage extends PredefinedActions {
 		return aboutDetailsMap;
 	}
 
+	public String getCompanyName() {
+		return getAboutText().get("Company Name");
+	}
+
+	public String getVersion() {
+		return getAboutText().get("Version");
+	}
+
+	public String getEmployee() {
+		return getAboutText().get("Employees");
+	}
+
+	public String getUsers() {
+		return getAboutText().get("Users");
+	}
+
+	public String getRenewalOn() {
+		return getAboutText().get("Renewal on");
+	}
+
 	public void clickOnAboutPopupBtn(String btnName) {
 		String locatorValue = String.format(aboutBtnLocator, btnName);
 		WebElement e = getElement("xpath", locatorValue, false);
 		clickOnElement(e, false);
+	}
+
+	enum Menu {
+		EMPLOYEELIST("Employee List"), MYINFO("My Info"), DIRECTORY("Directory"), BUZZ("Buzz");
+
+		public String menuItem;
+
+		private Menu(String menuTitle) {
+			this.menuItem = menuTitle;
+		}
+	}
+
+	public void gotoMenu(Menu menuName) {
+		String menuText = menuName.menuItem;
+		String locatorValue = String.format(menuLocator, menuText);
+		clickOnElement(getElement("xpath", locatorValue, true), false);
 	}
 }
