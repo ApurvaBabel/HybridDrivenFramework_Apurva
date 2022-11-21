@@ -8,6 +8,8 @@ import base.PredefinedActions;
 
 public class LoginPage extends PredefinedActions {
 
+	private static LoginPage loginPage;
+
 	@FindBy(id = "txtUsername")
 	private WebElement userNameElement;
 
@@ -26,8 +28,15 @@ public class LoginPage extends PredefinedActions {
 	@FindBy(css = "div.organization-logo.shadow>img")
 	private WebElement logo;
 
-	public LoginPage() {
-		PageFactory.initElements(driver, this);
+	private LoginPage() {
+
+	}
+
+	public static LoginPage getObject() {
+		if (loginPage == null)
+			loginPage = new LoginPage();
+		PageFactory.initElements(driver, loginPage);
+		return loginPage;
 	}
 
 	public void login(String username, String password) {

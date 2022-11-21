@@ -1,5 +1,6 @@
 package pages;
 
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,8 +11,12 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 
 import base.PredefinedActions;
+import constant.ConstantValue;
+import utility.PropertyFileOperations;
 
 public class DashboardPage extends PredefinedActions {
+
+	private static DashboardPage dashboardPage;
 
 	@FindBy(xpath = "//div[contains(@class,'oxd dashboard-widget-shell') and not(contains(@class,'ng-hide'))]//div[@class='widget-header']//span//following-sibling::span")
 	private List<WebElement> listOfWidgets;
@@ -34,14 +39,25 @@ public class DashboardPage extends PredefinedActions {
 	@FindBy(css = "div#companyInfo>div>div:nth-child(1)>p")
 	private WebElement aboutContentFirstP;
 
-	private String aboutBtnLocator = "//a[text()='%s']";
-	private String menuLocator = "//a[contains(text(),'%s')]";
+	private PropertyFileOperations prop;
 
-	public DashboardPage() {
-		PageFactory.initElements(driver, this);
+	private DashboardPage() {
+		try {
+			prop = new PropertyFileOperations(ConstantValue.DASHBOARDPAGELOCATOR);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static DashboardPage getObject() {
+		if (dashboardPage == null)
+			dashboardPage = new DashboardPage();
+		PageFactory.initElements(driver, dashboardPage);
+		return dashboardPage;
 	}
 
 	public int getNumberOfWidgets() {
+		waitForVisibilityOfElements(listOfWidgets);
 		return listOfWidgets.size();
 	}
 
@@ -106,12 +122,12 @@ public class DashboardPage extends PredefinedActions {
 	}
 
 	public void clickOnAboutPopupBtn(String btnName) {
-		String locatorValue = String.format(aboutBtnLocator, btnName);
+		String locatorValue = String.format(prop.getValue("aboutButtonLocator"), btnName);
 		WebElement e = getElement("xpath", locatorValue, false);
 		clickOnElement(e, false);
 	}
 
-	enum Menu {
+	public enum Menu {
 		EMPLOYEELIST("Employee List"), MYINFO("My Info"), DIRECTORY("Directory"), BUZZ("Buzz");
 
 		public String menuItem;
@@ -123,7 +139,7 @@ public class DashboardPage extends PredefinedActions {
 
 	public void gotoMenu(Menu menuName) {
 		String menuText = menuName.menuItem;
-		String locatorValue = String.format(menuLocator, menuText);
+		String locatorValue = String.format(prop.getValue("menuLocator"), menuText);
 		clickOnElement(getElement("xpath", locatorValue, true), false);
 	}
 }
