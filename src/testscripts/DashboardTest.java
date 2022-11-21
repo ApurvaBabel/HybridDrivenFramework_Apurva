@@ -15,7 +15,7 @@ public class DashboardTest extends TestBase {
 
 	@Test
 	public void verifyWidgetsCountAndText() throws IOException {
-		DashboardPage dashboardPage = new DashboardPage();
+		DashboardPage dashboardPage = DashboardPage.getObject();
 
 		System.out.println("VERIFY - Number of widgets on dashboard page");
 		int totalWidgets = dashboardPage.getNumberOfWidgets();
@@ -36,7 +36,7 @@ public class DashboardTest extends TestBase {
 
 	@Test
 	public void verfiyProfileAboutContentTest() {
-		DashboardPage dashboardPage = new DashboardPage();
+		DashboardPage dashboardPage = DashboardPage.getObject();
 
 		System.out.println("STEP - Mouse hover on Profile and Click on Settings");
 		List<String> expectedProfileSettingOptions = new ArrayList<String>(Arrays.asList("Change Password", "About"));
@@ -66,7 +66,7 @@ public class DashboardTest extends TestBase {
 		System.out.println("VERIFY - Users");
 		String users = "83 (417 more allowed)";
 		softAssert.assertEquals(dashboardPage.getUsers(), users);
-		
+
 		System.out.println("VERIFY - Renewal on");
 		String renewalOn = "Fri, 30 Dec 2022";
 		softAssert.assertEquals(dashboardPage.getRenewalOn(), renewalOn);

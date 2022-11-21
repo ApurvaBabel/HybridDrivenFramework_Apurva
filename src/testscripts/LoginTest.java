@@ -7,6 +7,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import base.PredefinedActions;
+import constant.ConstantValue;
 import pages.LoginPage;
 import utility.ExcelOperations;
 
@@ -18,7 +19,7 @@ public class LoginTest {
 		PredefinedActions.start(url);
 
 		System.out.println("STEP - Enter valid login credentials");
-		LoginPage loginPage = new LoginPage();
+		LoginPage loginPage = LoginPage.getObject();
 		loginPage.login(username, password);
 
 		if (isLoginSuccessful) {
@@ -44,7 +45,7 @@ public class LoginTest {
 
 	@DataProvider(name = "LoginDataProvider")
 	public Object[][] getLoginData() throws IOException {
-		Object[][] data = ExcelOperations.readExcelData(".//testdata/Logindata.xlsx", "Data");
+		Object[][] data = ExcelOperations.readExcelData(ConstantValue.LOGINDATA, "Data");
 		return data;
 	}
 

@@ -18,6 +18,7 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import constant.ConstantValue;
 import customExecptions.ElementNotEnabledException;
 
 public class PredefinedActions {
@@ -31,12 +32,11 @@ public class PredefinedActions {
 	}
 
 	public static void start(String url) {
-		System.setProperty("webdriver.chrome.driver", "drivers/chromedriver_106.exe");
+		System.setProperty(ConstantValue.CHROMEDRIVERKEY, ConstantValue.CHROMEDRIVER);
 		driver = new ChromeDriver();
 		driver.manage().window().maximize();
 		driver.get(url);
-		driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
-		wait = new WebDriverWait(driver, 60);
+		wait = new WebDriverWait(driver, ConstantValue.EXPLICTWAITTIME);
 		actions = new Actions(driver);
 	}
 
@@ -119,6 +119,15 @@ public class PredefinedActions {
 		}
 		return true;
 	}
+	
+	protected boolean waitForVisibilityOfElements(List <WebElement> element) {
+		try {
+			wait.until(ExpectedConditions.visibilityOfAllElements(element));
+		} catch (Exception exception) {
+			return false;
+		}
+		return true;
+	}
 
 	protected void scrollToElement(WebElement element) {
 		if (!element.isDisplayed()) {
@@ -187,14 +196,11 @@ public class PredefinedActions {
 		return driver.getCurrentUrl();
 	}
 
-	public static void takeScreenshot(String testCaseName) {
+	public static void takeScreenshot(String testCaseName) throws IOException {
 		TakesScreenshot ts = (TakesScreenshot) driver;
 		File srcFile = ts.getScreenshotAs(OutputType.FILE);
-		try {
-			FileUtils.copyFile(srcFile, new File("./failedTestCases/" + testCaseName + ".jpg"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		FileUtils.copyFile(srcFile,
+				new File(ConstantValue.SCREENSHOTLOCATION + testCaseName + ConstantValue.SCREENSHOTEXT));
 	}
 
 	protected void clickUsingJS(WebElement element) {

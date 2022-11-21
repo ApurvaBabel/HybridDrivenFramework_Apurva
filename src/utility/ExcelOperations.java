@@ -42,6 +42,7 @@ public class ExcelOperations {
 				}
 			}
 		}
+		wb.close();
 		return data;
 	}
 }
